@@ -1,19 +1,42 @@
 import os
 import pandas as pd
-from datasets import load_dataset
+import urllib.request
+from io import BytesIO
 
 def main():
     print("Loading dataset from Hugging Face...")
-    # Load the dataset from Hugging Face
-    dataset = load_dataset("ManikaSaini/zomato-restaurant-recommendation", split="train", token=os.environ.get("HF_TOKEN"))
+    urls = [
+        "https://huggingface.co/api/datasets/ManikaSaini/zomato-restaurant-recommendation/parquet/default/train/0.parquet",
+        "https://huggingface.co/api/datasets/ManikaSaini/zomato-restaurant-recommendation/parquet/default/train/1.parquet"
+    ]
     
-    # Convert to pandas DataFrame for easier review and preprocessing
-    df = dataset.to_pandas()
+    dfs = []
+    token = os.environ.get("HF_TOKEN")
+    
+    for i, url in enumerate(urls):
+        print(f"Downloading chunk {i+1} of {len(urls)} from HF...")
+        req = urllib.request.Request(url)
+        if token:
+            req.add_header("Authorization", f"Bearer {token}")
+            
+        try:
+            with urllib.request.urlopen(req) as response:
+                content = response.read()
+                df_chunk = pd.read_parquet(BytesIO(content))
+                print(f"Chunk {i+1} loaded successfully. Shape: {df_chunk.shape}")
+                dfs.append(df_chunk)
+        except Exception as e:
+            print(f"Error downloading chunk {i+1}: {e}")
+            raise e
+            
+    if not dfs:
+        raise ValueError("No data could be downloaded.")
+        
+    df = pd.concat(dfs, ignore_index=True)
     
     print("\n--- Initial Review ---")
     print("Initial Data Shape:", df.shape)
     print("Columns:", df.columns.tolist())
-    print("Missing values per column:\n", df.isnull().sum())
     
     print("\n--- Preprocessing ---")
     # Drop completely duplicated rows
@@ -21,7 +44,7 @@ def main():
     df = df.drop_duplicates()
     print(f"Dropped {initial_len - len(df)} duplicate rows.")
     
-    # Fill or drop nulls if strictly required (we'll just drop rows where 'name' is missing, for example)
+    # Fill or drop nulls if strictly required
     if 'name' in df.columns:
         df = df.dropna(subset=['name'])
     
