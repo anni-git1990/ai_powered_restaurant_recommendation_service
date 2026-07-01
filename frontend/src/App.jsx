@@ -33,7 +33,8 @@ function App() {
         else if (payload.budget.includes('High')) payload.budget = 'high';
       }
 
-      const response = await axios.post('http://127.0.0.1:8000/api/recommend', payload)
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+      const response = await axios.post(`${apiBaseUrl}/api/recommend`, payload)
       setResults(response.data.candidates)
     } catch (err) {
       if (err.response && err.response.data && err.response.data.detail) {

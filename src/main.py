@@ -9,6 +9,16 @@ if os.path.exists('.env'):
             if line.startswith('GROQ_API_KEY='):
                 os.environ['GROQ_API_KEY'] = line.strip().split('=', 1)[1].strip()
 
+# Auto-download dataset if not present
+if not os.path.exists('data/zomato_hf.parquet'):
+    print("Dataset not found at data/zomato_hf.parquet. Initiating download...")
+    try:
+        from src.download_hf_dataset import main as download_main
+        download_main()
+    except Exception as e:
+        print(f"Error downloading dataset on startup: {e}")
+
+
 from src.schemas import RecommendationRequest, RecommendationResponse
 from src.services import get_filtered_restaurants, get_all_locations
 from src.llm import get_ai_recommendations

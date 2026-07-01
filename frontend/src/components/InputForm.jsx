@@ -15,7 +15,8 @@ function InputForm({ onSubmit }) {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/locations');
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+        const response = await axios.get(`${apiBaseUrl}/api/locations`);
         if (response.data && response.data.locations) {
           setLocations(response.data.locations);
           if (response.data.locations.length > 0) {
