@@ -1,0 +1,412 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CulinaAI | Zomato AI Recommender</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#db313f",
+                    "primary-fixed-dim": "#ffb3b1",
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-secondary-fixed": "#1b1b1b",
+                    "tertiary-container": "#976d00",
+                    "surface-container": "#efeded",
+                    "surface-container-highest": "#e4e2e2",
+                    "surface-dim": "#dbdad9",
+                    "primary-fixed": "#ffdad8",
+                    "outline-variant": "#e4bebc",
+                    "inverse-on-surface": "#f2f0f0",
+                    "surface-container-low": "#f5f3f3",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "primary": "#b7122a",
+                    "tertiary-fixed-dim": "#ffbb0c",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#1b1c1c",
+                    "on-secondary-container": "#636262",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fbf9f8",
+                    "on-surface-variant": "#5b403f",
+                    "surface-variant": "#e4e2e2",
+                    "on-background": "#1b1c1c",
+                    "error": "#ba1a1a",
+                    "background": "#fbf9f8",
+                    "inverse-primary": "#ffb3b1",
+                    "tertiary-fixed": "#ffdea6",
+                    "on-primary-fixed": "#410007",
+                    "on-tertiary-fixed": "#271900",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#5f5e5e",
+                    "secondary-container": "#e2dfde",
+                    "surface-tint": "#bb162c",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#785600",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-error": "#ffffff",
+                    "surface": "#fbf9f8",
+                    "on-tertiary-container": "#fffbff",
+                    "inverse-surface": "#303031",
+                    "on-tertiary-fixed-variant": "#5d4200",
+                    "outline": "#8f6f6e",
+                    "surface-container-high": "#e9e8e7",
+                    "on-primary-container": "#fffbff",
+                    "on-primary-fixed-variant": "#92001c",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "container-max": "1280px",
+                    "xl": "40px",
+                    "unit": "4px",
+                    "lg": "24px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .ai-glow {
+            box-shadow: 0 0 20px rgba(183, 18, 42, 0.1);
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .pulsate {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+        /* Custom scrollbar for sidebar */
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #e4bebc;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md shadow-sm flex justify-between items-center px-4 md:px-10 h-16">
+<div class="font-headline-lg text-headline-lg font-bold text-primary">CulinaAI</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-primary font-bold transition-colors" href="#">Explore</a>
+<a class="text-secondary font-medium hover:text-primary-container transition-colors" href="#">History</a>
+<a class="text-secondary font-medium hover:text-primary-container transition-colors" href="#">AI Concierge</a>
+<div class="flex items-center gap-4 border-l pl-8 border-outline-variant">
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">notifications</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">favorite</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCph0k-T3JcnlIqsDytCNGmwBe6dBeKbxwlNbxPAoH-FTzaB_ETUeUaG2OKQu0EvuV0_jvSvy0TFMBPMYjuxL6omiwHR4mSD5NWepi9j26FCop2O4kyANaBOda1QN3KdjxJbIWCktKKyBlEtQQ2qtUhM-Qe-JHnl3dGjQ5tXraeJMjYoQWjMSZO3HC-31LXYo2nORQ1f5Juj7XLAIvpdGn085z9mvygJNid4BGIw6XjgS0e0IZXf-VC2TeS3U2sAYVAQq9AePd8ZXA">
+</div>
+</div>
+</div>
+<div class="md:hidden flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">menu</span>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- Sidebar Control Panel -->
+<aside class="hidden md:block w-[350px] fixed left-0 top-16 bottom-0 bg-surface-container-low border-r border-outline-variant overflow-y-auto sidebar-scroll z-40">
+<div class="p-lg space-y-8">
+<div class="space-y-1">
+<h2 class="font-headline-md text-headline-md text-on-background">Filter Results</h2>
+<p class="text-secondary font-body-md">Refine your AI recommendations</p>
+</div>
+<form class="space-y-6" onsubmit="event.preventDefault(); document.getElementById('results-grid').scrollIntoView({behavior: 'smooth'});">
+<!-- Location -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-secondary">Location</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary">location_on</span>
+<input class="w-full pl-10 pr-4 py-3 bg-white border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none" placeholder="Where are you dining?" type="text">
+</div>
+</div>
+<!-- Cuisine -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-secondary">Cuisine Type</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary">restaurant</span>
+<div class="relative group">
+  <button type="button" class="w-full pl-10 pr-10 py-3 bg-white border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none text-left text-secondary flex justify-between items-center">
+    <span class="">Italian, Sushi, Vegan...</span>
+    <span class="material-symbols-outlined">expand_more</span>
+  </button>
+  <!-- Dropdown Menu -->
+  <div class="absolute top-full left-0 w-full mt-2 bg-white border border-outline-variant rounded-xl shadow-xl z-50 hidden group-focus-within:block">
+    <div class="p-2 border-b border-outline-variant">
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-sm">search</span>
+        <input type="text" class="w-full pl-8 pr-4 py-2 text-sm bg-surface-container-low border-none rounded-lg focus:ring-0" placeholder="Search cuisines...">
+      </div>
+    </div>
+    <ul class="py-2 max-h-48 overflow-y-auto sidebar-scroll">
+      <li class="px-4 py-2 hover:bg-primary/5 cursor-pointer text-on-surface text-sm">Italian</li>
+      <li class="px-4 py-2 hover:bg-primary/5 cursor-pointer text-on-surface text-sm">Sushi</li>
+      <li class="px-4 py-2 hover:bg-primary/5 cursor-pointer text-on-surface text-sm">Vegan</li>
+      <li class="px-4 py-2 hover:bg-primary/5 cursor-pointer text-on-surface text-sm">Indian</li>
+      <li class="px-4 py-2 hover:bg-primary/5 cursor-pointer text-on-surface text-sm">Chinese</li>
+    </ul>
+  </div>
+</div>
+</div>
+</div>
+<!-- Budget -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-secondary">Budget</label>
+<select class="w-full px-4 py-3 bg-white border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none appearance-none">
+<option>Any Budget</option>
+<option>Low (₹)</option>
+<option>Medium (₹₹)</option>
+<option>High (₹₹₹)</option>
+</select>
+</div>
+<!-- Min Rating -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-secondary">Minimum Rating</label>
+<span class="font-label-md text-primary" id="rating-val-sidebar">3.5+</span>
+</div>
+<input class="w-full h-2 bg-secondary-container rounded-lg appearance-none cursor-pointer accent-primary" max="5" min="1" oninput="document.getElementById('rating-val-sidebar').innerText = this.value + '+'" step="0.5" type="range" value="3.5">
+</div>
+<!-- Vibes -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-secondary">Extra Preferences (Vibe)</label>
+<textarea class="w-full px-4 py-3 bg-white border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none resize-none" placeholder="e.g. romantic rooftop, quiet workspace..." rows="4"></textarea>
+</div>
+<!-- CTA -->
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-headline-md text-headline-md hover:bg-primary-container active:scale-95 transition-all flex items-center justify-center gap-2 group" type="submit">
+<span class="">Find Restaurants</span>
+<span class="material-symbols-outlined transition-transform group-hover:translate-x-1">auto_awesome</span>
+</button>
+</form>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-[350px] p-4 md:p-lg lg:p-xl transition-all">
+<!-- Results Section -->
+<section class="max-w-7xl mx-auto" id="results-area">
+<!-- Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-background">AI Curated Picks</h1>
+<p class="text-secondary text-body-lg">Hand-picked experiences matching your vibe.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 text-primary font-label-md bg-surface-container px-4 py-2 rounded-lg">
+                        Sort by: AI Match <span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Loading State (Optional Toggle) -->
+<div class="hidden flex flex-col items-center justify-center py-20 gap-8" id="loading-state">
+<div class="relative">
+<div class="w-24 h-24 rounded-full border-4 border-primary/20 flex items-center justify-center pulsate">
+<span class="material-symbols-outlined text-primary text-5xl">auto_awesome</span>
+</div>
+<div class="absolute inset-0 w-24 h-24 rounded-full border-t-4 border-primary animate-spin"></div>
+</div>
+<div class="text-center">
+<h3 class="font-headline-md text-headline-md text-on-background mb-2">Analyzing your preferences...</h3>
+<p class="font-body-md text-body-md text-secondary">Our AI is curating the perfect recommendations for you.</p>
+</div>
+</div>
+<!-- Restaurant Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-gutter" id="results-grid">
+<!-- Card 1 -->
+<div class="group bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Rooftop restaurant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW9FzUrr8lH91BGNihu8t5w7uilteyR_fzMWSi2_m8QaqB2y7mlAvdwRXAlZcIfj4H7jIHhtinr_UrMlX1joE7VHNagYwZkTT5Y0KdHcw8SlNgS2qyjNMSXQqUAMFeNTQDvwwygrIIEhZGU3UTDUwchNSGNDY6C38QpEIVKlcVdcaXv8p9xWw07M7mCc8UOPE77MT3wEtImiHZjU6QusTdcrG4OujisGyohEkFL_ygrp4zkv6tFfgcisGKsD9AHvlisEww-WMd18k">
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-black/60 backdrop-blur-md text-white text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">AI Pick</span>
+<span class="bg-primary text-white text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">Trending</span>
+</div>
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-[#FFBA00]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-on-surface">4.8</span>
+</div>
+</div>
+<div class="p-md space-y-4">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-on-background">Terraza Cielo</h3>
+<span class="text-secondary font-label-md">₹2,500 for two</span>
+</div>
+<div class="flex gap-2 flex-wrap">
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Italian</span>
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Fine Dining</span>
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Rooftop</span>
+</div>
+</div>
+<div class="p-4 bg-primary/5 border-l-4 border-primary rounded-r-xl">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[16px]">auto_awesome</span>
+<span class="text-[10px] font-bold text-primary uppercase tracking-wider">AI Insight</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                Matched because you're looking for a <span class="font-bold text-on-surface">romantic rooftop vibe</span>.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Sushi bar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDp0qHj3VbRA61lshmTmxPZdgYNPDGY8Tzg5Btc7H8IbPXzOvfLieK7JtRNZ-Ut4HsGFm95NeJsWPU8wGnGpaHHw1eCHzxSLbxj6BKDmN0Ka9nx3rMfw8EIhEqbCS0gT6Wz50HU6ogs6FJOFqNb6Ip-1oRwH86lEdEBCEjZQ9r3p3UEg2ichZnbAKzkh1kfuPgH-CYFeb9chdPqSqepY2wwNEvHkdms8xUTXQx89W7BCfblf_FThPDYJx88rJM_DlXIk64SPfExJP8">
+<div class="absolute top-4 left-4">
+<span class="bg-black/60 backdrop-blur-md text-white text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">Rare Find</span>
+</div>
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-[#FFBA00]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-on-surface">4.5</span>
+</div>
+</div>
+<div class="p-md space-y-4">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-on-background">Sakura Underground</h3>
+<span class="text-secondary font-label-md">₹1,800 for two</span>
+</div>
+<div class="flex gap-2 flex-wrap">
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Japanese</span>
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Sushi</span>
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Jazz Vibe</span>
+</div>
+</div>
+<div class="p-4 bg-primary/5 border-l-4 border-primary rounded-r-xl">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[16px]">auto_awesome</span>
+<span class="text-[10px] font-bold text-primary uppercase tracking-wider">AI Insight</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                Our AI detected your interest in <span class="font-bold text-on-surface">intimate spaces</span>.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Garden cafe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1JQ3zFFXyRHs-wi7VWg5Jj86SrPUKJnQNKyKKxdl46OgXYD_4A4kOOEZ_RIYtgjMRm7FRoPL1PZLADmp64hTIO4sBI5q9E1V0U28FhIayG_ekotQLWybEWpnUGVFC0s_boiCmy5x1h7_gsSUXfz3TwT8wU5zqPudc46DJAGkBbNUk13H-P_vJk1Avv8gR9qd1Ot05YPPe2vihimDJIvIf6mptnal7gAL_s1A8kJBBIssZgV_531KuFoRb9YM3qaMpCHL6Q6MOQwI">
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-[#FFBA00]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-on-surface">4.2</span>
+</div>
+</div>
+<div class="p-md space-y-4">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-on-background">The Green Veranda</h3>
+<span class="text-secondary font-label-md">₹1,200 for two</span>
+</div>
+<div class="flex gap-2 flex-wrap">
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Mediterranean</span>
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Cafe</span>
+<span class="text-label-sm font-label-sm text-secondary px-2 py-0.5 bg-surface-container rounded border border-outline-variant">Pet Friendly</span>
+</div>
+</div>
+<div class="p-4 bg-primary/5 border-l-4 border-primary rounded-r-xl">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[16px]">auto_awesome</span>
+<span class="text-[10px] font-bold text-primary uppercase tracking-wider">AI Insight</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                Ideal for your <span class="font-bold text-on-surface">outdoor preference</span>.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- BottomNavBar for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center h-20 px-4 pb-safe bg-surface/95 dark:bg-surface-container/95 backdrop-blur-sm shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] z-50 rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-primary bg-primary-container/10 rounded-xl p-2 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-label-md text-label-md">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary p-2 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary p-2 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-label-md text-label-md">AI</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary p-2 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+<script>
+    // Simulate loading on search
+    const sidebarForm = document.querySelector('aside form');
+    if (sidebarForm) {
+        sidebarForm.addEventListener('submit', (e) => {
+            const grid = document.getElementById('results-grid');
+            const loading = document.getElementById('loading-state');
+            
+            grid.classList.add('opacity-0');
+            loading.classList.remove('hidden');
+            
+            setTimeout(() => {
+                grid.classList.remove('opacity-0');
+                loading.classList.add('hidden');
+                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 1500);
+        });
+    }
+</script>
+
+
+</body></html>
