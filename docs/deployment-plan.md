@@ -4,6 +4,45 @@ This document details the step-by-step instructions to deploy the FastAPI backen
 
 ---
 
+## Production Architecture
+
+Below is the high-level production architecture for the Zomato AI Restaurant Recommendation system:
+
+```mermaid
+graph TD
+    User[Client Browser]
+    
+    subgraph Vercel ["Vercel Hosting"]
+        FE["React Frontend App (Vite)"]
+    end
+    
+    subgraph Railway ["Railway Cloud"]
+        BE["FastAPI Backend App"]
+        LocalCache[("Local Disk (data/zomato_hf.parquet)")]
+    end
+    
+    subgraph External ["External Services"]
+        HF["Hugging Face Hub"]
+        Groq["Groq Cloud API (LLM)"]
+    end
+    
+    User -->|Accesses UI via HTTPS| FE
+    User -->|API requests (CORS)| BE
+    BE -->|Checks/Downloads Dataset| HF
+    HF -.->|Saves dataset| LocalCache
+    BE -->|Reads & Filters candidates| LocalCache
+    BE -->|Submits candidates & prompt| Groq
+    Groq -->|Returns ranked JSON recommendations| BE
+```
+
+### Architectural Key Points:
+1. **Frontend Hosting (Vercel)**: Serves static assets, routes pages, and executes frontend business logic inside the user's browser. It uses the `VITE_API_BASE_URL` environment variable to identify and talk to the backend.
+2. **Backend API (Railway)**: A containerized Python instance running FastAPI. Exposed via a public URL on port `8000`. Handles requests from Vercel using configured CORS middleware.
+3. **Data Storage & Self-Healing Cache**: A SQLite database/parquet file cache. Upon container startup, the FastAPI app checks if `data/zomato_hf.parquet` is present on the disk. If missing, it fetches the raw dataset dynamically from Hugging Face and caches it locally.
+4. **AI Reasoning (Groq)**: The backend filters local restaurants down to a small pool (<20) and sends a context-rich prompt to the Groq API. Groq ranks them and returns the final structured recommendations to the backend.
+
+---
+
 ## 1. Backend Deployment (Railway)
 
 We deploy the FastAPI backend on Railway. Thanks to the automatic download integration, the server will fetch the Hugging Face dataset on startup without requiring any manual database setup.
