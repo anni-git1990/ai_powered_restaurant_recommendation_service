@@ -6,3 +6,5 @@ groq
 pydantic
 pydantic-settings
 SQLAlchemy
+pyarrow
+
