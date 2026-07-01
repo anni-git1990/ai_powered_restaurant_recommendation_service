@@ -6,7 +6,7 @@ def ingest_data():
     print("Loading Zomato dataset from Hugging Face...")
     try:
         # Load the dataset
-        dataset = load_dataset('ManikaSaini/zomato-restaurant-recommendation')
+        dataset = load_dataset('ManikaSaini/zomato-restaurant-recommendation', token=os.environ.get("HF_TOKEN"))
         # The dataset is usually split, 'train' is the default
         df = dataset['train'].to_pandas()
         

@@ -5,7 +5,7 @@ from datasets import load_dataset
 def main():
     print("Loading dataset from Hugging Face...")
     # Load the dataset from Hugging Face
-    dataset = load_dataset("ManikaSaini/zomato-restaurant-recommendation", split="train")
+    dataset = load_dataset("ManikaSaini/zomato-restaurant-recommendation", split="train", token=os.environ.get("HF_TOKEN"))
     
     # Convert to pandas DataFrame for easier review and preprocessing
     df = dataset.to_pandas()

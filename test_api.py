@@ -5,8 +5,10 @@ import json
 if os.path.exists('.env'):
     with open('.env', 'r') as f:
         for line in f:
-            if line.startswith('GROQ_API_KEY='):
-                os.environ['GROQ_API_KEY'] = line.strip().split('=', 1)[1].strip()
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, val = line.split('=', 1)
+                os.environ[key.strip()] = val.strip()
 
 from src.schemas import RecommendationRequest
 from src.main import get_recommendations

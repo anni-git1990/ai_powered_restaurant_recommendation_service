@@ -6,8 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 if os.path.exists('.env'):
     with open('.env', 'r') as f:
         for line in f:
-            if line.startswith('GROQ_API_KEY='):
-                os.environ['GROQ_API_KEY'] = line.strip().split('=', 1)[1].strip()
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, val = line.split('=', 1)
+                os.environ[key.strip()] = val.strip()
 
 # Auto-download dataset if not present
 if not os.path.exists('data/zomato_hf.parquet'):
