@@ -8,6 +8,13 @@ This document details the step-by-step instructions to deploy the FastAPI backen
 
 Below is the high-level production architecture for the Zomato AI Restaurant Recommendation system:
 
+![Production Architecture Diagram](production_architecture.png)
+
+*(You can also access the architecture image file directly here: [production_architecture.png](file:///d:/anita/product-AI-training/git_projects/ai_powered_restaurant_recommendation_service/docs/production_architecture.png))*
+
+<details>
+<summary><b>View Mermaid Source Code</b></summary>
+
 ```mermaid
 graph TD
     User[Client Browser]
@@ -34,6 +41,8 @@ graph TD
     BE -->|Submits candidates & prompt| Groq
     Groq -->|Returns ranked JSON recommendations| BE
 ```
+</details>
+
 
 ### Architectural Key Points:
 1. **Frontend Hosting (Vercel)**: Serves static assets, routes pages, and executes frontend business logic inside the user's browser. It uses the `VITE_API_BASE_URL` environment variable to identify and talk to the backend.
